@@ -80,6 +80,8 @@ build:
     DOCKER_TLS_VERIFY: 1
     DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
   before_script:
+    # Wait for Docker daemon to be ready
+    - until docker info; do sleep 1; done
     # Login to GitLab Container Registry
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     # Configure insecure registry for development (HTTP)
