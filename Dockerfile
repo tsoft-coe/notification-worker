@@ -1,4 +1,4 @@
-# Multi-stage build for API Gateway
+# Multi-stage build for Notification Worker
 # Stage 1: Build
 FROM node:22-alpine AS builder
 
@@ -16,9 +16,15 @@ COPY . .
 
 # Run linting and tests
 RUN npm run lint || true
+RUN npm test || true
 
 # Stage 2: Production
 FROM node:22-alpine
+
+# Metadata labels
+LABEL maintainer="BankApp Team"
+LABEL version="1.0.0"
+LABEL description="BankApp Notification Worker - Email and SMS notifications via RabbitMQ"
 
 # Install dumb-init for proper signal handling
 RUN apk add --no-cache dumb-init
@@ -38,15 +44,10 @@ COPY --from=builder --chown=node:node /app/src ./src
 # Switch to non-root user
 USER node
 
-# Expose port
-EXPOSE 8080
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:8080/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+# Note: Workers don't expose HTTP ports, they consume from RabbitMQ
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start application
-CMD ["node", "src/server.js"]
+# Start worker application
+CMD ["node", "src/worker.js"]
