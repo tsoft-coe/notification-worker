@@ -21,10 +21,6 @@ spec:
       labels:
         app: {{ .Values.name }}
         environment: {{ .Values.environment }}
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "{{ .Values.service.port }}"
-        prometheus.io/path: "/metrics"
     spec:
       securityContext:
         runAsNonRoot: true
@@ -37,11 +33,6 @@ spec:
         - name: {{ .Values.name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
 
           envFrom:
             - configMapRef:
@@ -61,33 +52,6 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
-
-          livenessProbe:
-            httpGet:
-              path: /health/live
-              port: {{ .Values.service.port }}
-            initialDelaySeconds: {{ .Values.probes.liveness.initialDelay }}
-            periodSeconds: {{ .Values.probes.liveness.period }}
-            timeoutSeconds: 5
-            failureThreshold: 3
-
-          readinessProbe:
-            httpGet:
-              path: /health/ready
-              port: {{ .Values.service.port }}
-            initialDelaySeconds: {{ .Values.probes.readiness.initialDelay }}
-            periodSeconds: {{ .Values.probes.readiness.period }}
-            timeoutSeconds: 3
-            failureThreshold: 3
-
-          startupProbe:
-            httpGet:
-              path: /health/live
-              port: {{ .Values.service.port }}
-            initialDelaySeconds: 0
-            periodSeconds: 5
-            timeoutSeconds: 3
-            failureThreshold: 30
 
           resources:
             requests:
