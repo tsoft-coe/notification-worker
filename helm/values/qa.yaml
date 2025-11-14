@@ -1,0 +1,65 @@
+# QA Environment Values
+
+name: api-gateway-qa
+namespace: bankapp-qa
+environment: qa
+
+replicas: 2
+
+image:
+  repository: api-gateway
+  tag: qa-latest
+  pullPolicy: Always
+
+service:
+  port: 8080
+
+ingress:
+  host: gateway.qa.bankapp.local
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "200m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+probes:
+  liveness:
+    initialDelay: 20
+    period: 10
+  readiness:
+    initialDelay: 10
+    period: 5
+
+config:
+  nodeEnv: production
+  logLevel: info
+
+  redis:
+    host: host.docker.internal
+    port: "6380"
+
+  keycloak:
+    url: http://host.docker.internal:12200
+    realm: bankapp-qa
+    clientId: api-gateway
+
+  accountServiceUrl: http://account-service-qa:3000
+  transactionServiceUrl: http://transaction-service-qa:3002
+  authServiceUrl: http://auth-service-qa:3003
+
+  circuitBreakerTimeout: "3000"
+  circuitBreakerErrorThreshold: "50"
+  circuitBreakerResetTimeout: "30000"
+
+  rateLimitWindowMs: "900000"
+  rateLimitMaxRequests: "100"
+
+  corsOrigin: "http://bankapp-qa.local"
+
+secrets:
+  - name: REDIS_PASSWORD
+  - name: KEYCLOAK_CLIENT_SECRET
+  - name: JWT_SECRET

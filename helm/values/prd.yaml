@@ -1,0 +1,65 @@
+# PRD Environment Values
+
+name: api-gateway-prd
+namespace: bankapp-prd
+environment: production
+
+replicas: 3
+
+image:
+  repository: api-gateway
+  tag: prd-latest
+  pullPolicy: Always
+
+service:
+  port: 8080
+
+ingress:
+  host: gateway.prd.bankapp.local
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "500m"
+  limits:
+    memory: "1Gi"
+    cpu: "1000m"
+
+probes:
+  liveness:
+    initialDelay: 30
+    period: 10
+  readiness:
+    initialDelay: 15
+    period: 5
+
+config:
+  nodeEnv: production
+  logLevel: warn
+
+  redis:
+    host: host.docker.internal
+    port: "6381"
+
+  keycloak:
+    url: http://host.docker.internal:12200
+    realm: bankapp-prd
+    clientId: api-gateway
+
+  accountServiceUrl: http://account-service-prd:3000
+  transactionServiceUrl: http://transaction-service-prd:3002
+  authServiceUrl: http://auth-service-prd:3003
+
+  circuitBreakerTimeout: "3000"
+  circuitBreakerErrorThreshold: "50"
+  circuitBreakerResetTimeout: "30000"
+
+  rateLimitWindowMs: "900000"
+  rateLimitMaxRequests: "100"
+
+  corsOrigin: "https://bankapp.com"
+
+secrets:
+  - name: REDIS_PASSWORD
+  - name: KEYCLOAK_CLIENT_SECRET
+  - name: JWT_SECRET

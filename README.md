@@ -1,19 +1,15 @@
 # API Gateway
 
-API Gateway con routing, autenticación y rate limiting para BankApp.
+BankApp API Gateway - Authentication, routing, and rate limiting.
 
-## Desarrollo
+## Quick Start
 
 ```bash
 npm install
-npm run dev  # http://localhost:3000
-npm test
+cp .env.example .env  # Edit with your config
+npm run dev
 ```
 
-## Rutas
+## Documentation
 
-- `/api/v1/accounts/*` → Account Service
-- `/api/v1/transactions/*` → Transaction Service
-
-Ver `../../DEVELOPMENT.md` para detalles completos de arquitectura y despliegue.
-
+See [DEVELOPMENT.md](../../DEVELOPMENT.md) for development workflow and [SETUP.md](../../SETUP.md) for infrastructure setup.

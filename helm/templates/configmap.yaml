@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.name }}
+    environment: {{ .Values.environment }}
+data:
+  NODE_ENV: {{ .Values.config.nodeEnv | quote }}
+  LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+
+  # Database
+  DB_HOST: {{ .Values.config.db.host | quote }}
+  DB_PORT: {{ .Values.config.db.port | quote }}
+  DB_NAME: {{ .Values.config.db.name | quote }}
+  DB_USER: {{ .Values.config.db.user | quote }}
+
+  # Redis
+  REDIS_HOST: {{ .Values.config.redis.host | quote }}
+  REDIS_PORT: {{ .Values.config.redis.port | quote }}
+
+  # RabbitMQ
+  RABBITMQ_HOST: {{ .Values.config.rabbitmq.host | quote }}
+  RABBITMQ_PORT: {{ .Values.config.rabbitmq.port | quote }}
+
+  # Keycloak
+  KEYCLOAK_URL: {{ .Values.config.keycloak.url | quote }}
+  KEYCLOAK_REALM: {{ .Values.config.keycloak.realm | quote }}
+  KEYCLOAK_CLIENT_ID: {{ .Values.config.keycloak.clientId | quote }}
+
+  # Feature Flags
+  {{- range $key, $value := .Values.config.featureFlags }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}

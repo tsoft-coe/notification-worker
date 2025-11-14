@@ -1,0 +1,77 @@
+# DEV Environment Values
+
+name: api-gateway-dev
+namespace: bankapp-dev
+environment: dev
+
+replicas: 1
+
+image:
+  repository: api-gateway
+  tag: dev-latest
+  pullPolicy: Never  # Para Kind (imagen local)
+
+service:
+  port: 8080
+
+ingress:
+  host: gateway.dev.bankapp.local
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "100m"
+  limits:
+    memory: "256Mi"
+    cpu: "250m"
+
+probes:
+  liveness:
+    initialDelay: 15
+    period: 10
+  readiness:
+    initialDelay: 5
+    period: 5
+
+config:
+  nodeEnv: development
+  logLevel: debug
+
+  # Redis (for rate limiting)
+  redis:
+    host: host.docker.internal
+    port: "6379"
+
+  # Keycloak
+  keycloak:
+    url: http://host.docker.internal:12200
+    realm: bankapp-dev
+    clientId: api-gateway
+
+  # Upstream Services
+  accountServiceUrl: http://account-service-dev:3000
+  transactionServiceUrl: http://transaction-service-dev:3002
+  authServiceUrl: http://auth-service-dev:3003
+
+  # Circuit Breaker
+  circuitBreakerTimeout: "3000"
+  circuitBreakerErrorThreshold: "50"
+  circuitBreakerResetTimeout: "30000"
+
+  # Rate Limiting
+  rateLimitWindowMs: "900000"
+  rateLimitMaxRequests: "100"
+
+  # CORS
+  corsOrigin: "http://localhost:4200,http://bankapp-dev.local"
+
+# Secrets (nombres, no valores)
+secrets:
+  - name: REDIS_PASSWORD
+  - name: KEYCLOAK_CLIENT_SECRET
+  - name: JWT_SECRET
+
+# Variables adicionales para DEV
+extraEnv:
+  - name: DEBUG
+    value: "true"
