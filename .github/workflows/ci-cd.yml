@@ -1,4 +1,4 @@
-name: CI/CD - API Gateway
+name: CI/CD - Notification Worker
 
 on:
   push:
@@ -22,12 +22,12 @@ jobs:
     name: CI/CD Pipeline
     uses: tsoft-coe/.github/.github/workflows/reusable-nodejs-cicd.yml@main
     with:
-      service_name: api-gateway
+      service_name: notification-worker
       node_version: '22'
       working_directory: .
       run_tests: true
       test_needs_postgres: false
       test_needs_redis: true
       enable_security_scan: true
-      deployment_port: 8080
+      deployment_port: 3004
     secrets: inherit
